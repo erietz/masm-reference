@@ -96,7 +96,7 @@ If first number of hex is 0-7, number is positive. If 8-F, then negative.
 
 \noindent\begin{tabular}{|m{2cm}lll|} \hline
 
-  Type                   & Name   & bits & Range \\ \hline
+  Type                   & Name   & bits    & Range \\ \hline
   Byte                   & BYTE   & 8       & [0          , \num{e8}-1] \\ \hline
   Signed Byte            & SBYTE  & 8       & [-\num{e7}  , \num{e7}-1] \\ \hline
   Word                   & WORD   & 16      & [0          , \num{e16}-1] \\ \hline
@@ -323,9 +323,9 @@ INSTR op1, op2
 \mysep
 
 \begin{description}
-	\item[TYPE] Number of bytes in the data type used in declaration
-	\item[OFFSET] returns address offset from start of data segment of data label
-	\item[LENGTHOF] Length used in declaration (aka number of elements in array)
+  \item[TYPE] Number of bytes in the data type used in declaration
+  \item[OFFSET] returns address offset from start of data segment of data label
+  \item[LENGTHOF] Length used in declaration (aka number of elements in array)
   \item[SIZEOF] Size of memory assigned in declaration. (same as LENGTHOF
     $\times$ TYPE)
 \end{description}
@@ -333,8 +333,8 @@ INSTR op1, op2
 \mysep
 
 \begin{description}
-	\item[STD] Set direction flag. Primitives decrement by size (in bytes) of the 
-		TYPE. Used to move backwards through array.
+  \item[STD] Set direction flag. Primitives decrement by size (in bytes) of the 
+    TYPE. Used to move backwards through array.
   \item[CLD] Clear direction flag. Primitives increment by size (in bytes) of
     the TYPE. Used to move ``forward'' through an array.
 \end{description}
@@ -342,25 +342,25 @@ INSTR op1, op2
 \mysep
 
 \begin{description}
-	\item[LOD(SB)(SW)(SD)] Load mem addressed by ESI into accumulator
-	\item[STO(SB)(SW)(SD)] Store accumulator contents into memory addressed by EDI
+  \item[LOD(SB)(SW)(SD)] Load mem addressed by ESI into accumulator
+  \item[STO(SB)(SW)(SD)] Store accumulator contents into memory addressed by EDI
   \item[MOV(SB)(SW)(SD)] ``Move'' copy data from mem addressed by ESI into
     memory addressed by EDI
-	\item[CMP(SB)(SW)(SD)] Compare contents of two mem locations addressed by ESI 
-		and EDI
-	\item[SCA(SB)(SW)(SD)] ``Scan'' compare accumulator to memory addressed by EDI
-	\item[SB, SW, SD] In above instructions refer to BYTE, WORD, and DWORD sized
-		instructions.
+  \item[CMP(SB)(SW)(SD)] Compare contents of two mem locations addressed by ESI 
+    and EDI
+  \item[SCA(SB)(SW)(SD)] ``Scan'' compare accumulator to memory addressed by EDI
+  \item[SB, SW, SD] In above instructions refer to BYTE, WORD, and DWORD sized
+    instructions.
 \end{description}
 
 \mysep
 
 \begin{description}
-	\item[REP] Repeat string primitive and decrement ECX while ECX $> 0$
-	\item[REPZ] Same as REP but while Zero flag is set and ECX $> 0$
-	\item[REPE]  Same as REPZ. Repeat while equal.
-	\item[REPNZ] Same as REP but while Zero flag is clear and ECX $> 0$
-	\item[REPNE] Same as REPNZ. Repeat while not equal.
+  \item[REP] Repeat string primitive and decrement ECX while ECX $> 0$
+  \item[REPZ] Same as REP but while Zero flag is set and ECX $> 0$
+  \item[REPE]  Same as REPZ. Repeat while equal.
+  \item[REPNZ] Same as REP but while Zero flag is clear and ECX $> 0$
+  \item[REPNE] Same as REPNZ. Repeat while not equal.
 \end{description}
 
 \mysep
@@ -369,36 +369,36 @@ INSTR op1, op2
   \item[LOCAL] Creates local variable. Creates stack frame, terminates stack
     frame, makes space on stack for local variables, provides labels to
     reference stack locations.
-	\item[REQ] Marks macro argument as required.
+  \item[REQ] Marks macro argument as required.
 \end{description}
 
 \mysep
 
 \begin{description}
-	\item[FINIT] Must be executed before any other FPU instructions
-	\item[FLD] Loads floating-point value on FPU stack
-	\item[FILD] Loads like FLD and converts int to REAL10 
-	\item[FST] Stores floating-point value from ST(0) into mem location
-	\item[FIST] Like FST but stores as int in memory
-	\item[FSTP] Stores like FST but also pops off ST(0) from stack.
+  \item[FINIT] Must be executed before any other FPU instructions
+  \item[FLD] Loads floating-point value on FPU stack
+  \item[FILD] Loads like FLD and converts int to REAL10 
+  \item[FST] Stores floating-point value from ST(0) into mem location
+  \item[FIST] Like FST but stores as int in memory
+  \item[FSTP] Stores like FST but also pops off ST(0) from stack.
 \end{description}
 
 \mysep
 
 \begin{description}
-	\item[FADD] Add source to destination, overwrite destination
-	\item[FSUB] Subtract source from destination
-	\item[FMUL] Multiply source by destination
-	\item[FDIV] Divide destination by source
-	\item[] Note: all above operations occur with old ST(0) and ST(1) and result
-		is stored in new ST(0). 
+  \item[FADD] Add source to destination, overwrite destination
+  \item[FSUB] Subtract source from destination
+  \item[FMUL] Multiply source by destination
+  \item[FDIV] Divide destination by source
+  \item[] Note: all above operations occur with old ST(0) and ST(1) and result
+    is stored in new ST(0). 
 \end{description}
 
 \mysep
 
 \begin{description}
-	\item[FCHS] Invert sign of ST(0). No operands.
-	\item[FABS] Clear sign of ST(0). No operands.
+  \item[FCHS] Invert sign of ST(0). No operands.
+  \item[FABS] Clear sign of ST(0). No operands.
 \end{description}
 
 \section{Extra}
@@ -406,7 +406,7 @@ INSTR op1, op2
 \begin{description}
   \item[Big] MSB stored first (lower) in memory. LSB stored last (higher).
   \item[Little] LSB stored first (lower) in memory. MSB stored last (higher).
-	\item[] x86-64 systems are little endian.
+  \item[] x86-64 systems are little endian.
 \end{description}
 
 $$T_{parallel} = fT + \frac{(1-f)T}{n}$$
