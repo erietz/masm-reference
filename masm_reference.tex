@@ -1,0 +1,418 @@
+%{{{ Preamble
+\documentclass[10pt,landscape]{article}
+\usepackage[margin=1cm]{geometry}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{longtable,booktabs}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{graphicx}
+\graphicspath{{images/}{plots/}{figures/}}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue
+}
+\setcounter{secnumdepth}{0}
+\setlength\parindent{0pt}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{siunitx}
+\sisetup{expbase = 2}
+\pagestyle{empty}
+
+\usepackage{multicol}
+%\setlength{\columnseprule}{1pt}
+%\def\columnseprulecolor{\color{blue}}
+
+% \setlength{\premulticols}{2pt}
+% \setlength{\postmulticols}{2pt}
+% \setlength{\multicolsep}{2pt}
+% \setlength{\columnsep}{2pt}
+
+\usepackage{enumitem}
+
+\setlist{nosep}
+% \setlist[description]{
+%   style=standard,
+%   labelindent=0.0cm,
+%   labelwidth=1.2cm,
+%   labelsep*=0.1cm,
+%   leftmargin=0.3cm,
+%   before=\small,
+%   nosep
+% }
+
+\usepackage{titlesec}
+\titleformat{\section}
+   {\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+   {\normalfont\normalsize\bfseries}{\thesection}{1em}{}
+
+\newcommand{\mysep}{\vspace{0.1cm}\hrule\vspace{0.1cm}}
+%}}}
+
+\begin{document}
+
+\begin{center}
+  MASM Reference
+
+  Ethan Rietz
+\end{center}
+
+\begin{multicols*}{3}
+
+assemble $\rightarrow$ link $\rightarrow$ load $\rightarrow$ run
+
+fetch $\rightarrow$ decode $\rightarrow$ execute
+
+each memory address identifies a single byte or 8 bits
+
+\section{Numbers}
+
+\begin{tabular}{|llllll|} \hline
+
+  Dec & Bin  & Hex & Dec & Bin  & Hex \\ \hline
+  0   & 0000 & 0   & 8   & 1000 & 8   \\
+  1   & 0001 & 1   & 9   & 1001 & 9   \\
+  2   & 0010 & 2   & 10  & 1010 & A   \\
+  3   & 0011 & 3   & 11  & 1011 & B   \\
+  4   & 0100 & 4   & 12  & 1100 & C   \\
+  5   & 0101 & 5   & 13  & 1101 & D   \\
+  6   & 0110 & 6   & 14  & 1110 & E   \\
+  7   & 0111 & 7   & 15  & 1111 & F   \\ \hline
+
+\end{tabular}
+
+If first number of hex is 0-7, number is positive. If 8-F, then negative.
+
+\subsection{Floats}
+
+\begin{description}
+  \item[Single (real4)] 32 bits: exponent: 8, mantisa: 23
+  \item[Double (real8)] 64 bits: exponent: 11, mantisa: 52
+  \item[Extend (real10)] 80 bits: exponent: 15, mantisa: 64
+\end{description}
+
+\section{Memory Units}
+
+\noindent\begin{tabular}{|m{2cm}lll|} \hline
+
+  Type                   & Name   & bits & Range \\ \hline
+  Byte                   & BYTE   & 8       & [0          , \num{e8}-1] \\ \hline
+  Signed Byte            & SBYTE  & 8       & [-\num{e7}  , \num{e7}-1] \\ \hline
+  Word                   & WORD   & 16      & [0          , \num{e16}-1] \\ \hline
+  Signed Word            & SWORD  & 16      & [-\num{e15} , \num{e15}-1] \\ \hline
+  Doubleword             & DWORD  & 32      & [0          , \num{e32}-1] \\ \hline
+  Signed Doubleword      & SDWORD & 32      & [-\num{e31} , \num{e31}-1] \\ \hline
+  Quadword               & QWORD  & 64      & [0          , \num{e64}-1] \\ \hline
+  Signed Quadword        & SQWORD & 64      & [-\num{e63} , \num{e63}-1] \\ \hline
+  Double Quadword        & OWORD  & 128     & [0          , \num{e128}-1] \\ \hline
+  Signed Double Quadword & SOWORD & 128     & [-\num{e127}, \num{e127}-1] \\ \hline
+
+\end{tabular}
+
+\section{Status Flags}
+
+\mysep
+
+\textbf{Status flags}
+
+EFLAGS register controls or reports the status of the processor. Each
+bit is its own flag described below.
+
+\begin{description}
+  \item[CF or CY] Carry flag: unsigned arithmetic too big
+  \item[PF or PE] Parity flag: set if LSB contains even number of ones
+  \item[AF or AC] Auxiliary flag: binary coded decimal arithmetic
+  \item[ZF or ZR] Zero flag: set if result is zero
+  \item[SF or PL] Sign flag: set equal to the MSB of signed integer
+  \item[OF or OV] Overflow flag: signed integer arithmetic
+\end{description}
+
+\mysep
+
+\textbf{Control Flags}
+
+\begin{description}
+  \item[DF] Direction flag: direction of memory traversal for strings
+\end{description}
+
+\mysep
+
+\textbf{Segment registers}
+
+\begin{description}
+  \item[CS] Points to beginning of code segment
+  \item[DS] Points to beginning of data segment
+  \item[ES FS GS] Point to other data storage segments
+  \item[SS] Points to stack segment
+\end{description}
+
+\mysep
+
+\textbf{Instruction Pointer}
+
+\begin{description}
+  \item[EIP] contains the OFFSET (in code segment) of next instruction to be
+    executed. Adding EIP to CS gives real address of next instruction. 
+\end{description}
+
+\mysep
+
+\section{Registers}
+
+\begin{description}
+  \item[EBX] the only real general purpose register
+  \item[EAX] used mainly for ALU operations
+  \item[EDX] extension of EAX for operations beyond 32 bits
+  \item[ECX] used as a counter (e.g. LOOP and REP)
+  \item[ESI/EDI] for memory transfer functions (source and destination)
+  \item[ESP] Stack pointer (points to top of runtime stack)
+  \item[EBP] points to the base of a stack frame
+\end{description}
+
+Can access EAX, EBX, ECX, and EDX sub-registers as AX, BX, CX, and DX.
+The high and low addresses are further named AH, AL, etc...
+
+%{{{
+\section{Instructions}
+
+INSTR op1, op2
+
+\begin{description}
+  \item[MOV] copy data from op2 to op1
+  \item[MOVSX] moves a signed value into a register and sign-extends it
+  \item[MOVZX] moves an unsigned value into a register and zero-extends it
+  \item[XCHG] exchange the contents of operands (cant do mem to mem)
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[ADD] add op2 to op1, store result in op1
+  \item[SUB] sub op2 from op1, store result in op1
+  \item[INC] add 1 to op1, store result in op1 (affects carry flag)
+  \item[DEC] subtract 1 from op1, store result in op1 (affects carry flag)
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[MUL] multiply val in EAX by op2, store result in EDX:EAX
+  \item[IMUL] signed multiply val in EAX by op2, store result in EDX:EAX
+  \item[DIV] div val in EAX by op2. Quotient stored in EAX, remainder stored in
+    EDX. Pre: EDX must be set equal to 0.
+  \item[IDIV] signed division similar to DIV. Remainder has same sign as
+    dividend.
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[CDQ] Converts signed DWORD in EAX to a signed quad word in EDX:EAX by
+    extending the high order bit of EAX throughout EDX
+  \item[CWD] Converts a signed word in AX to a signed doubleword in EAX by
+    extending the sign bit of AX throughout EAX.
+  \item[CBW] Converts byte in AL to word Value in AX by extending sign of AL
+    throughout register AH.
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[AND] performs a logical AND of op1 and op2 replacing op1 with result.
+    Modifies flags.
+  \item[OR] logical inclusive OR of op1 and op2. Result stored in op1. Modifies
+    flags.
+  \item[XOR] bitwise exclusive OR of op1 and op2. Result stored in op1.
+    Modifies flags.
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[CMP] subtracts op2 from op1 and updates flags. Results not saved.
+  \item[LOOP] decrements CX by 1 and transfers control to ``label:'' if CX is
+    not zero. The ``label'' operand must be within -128 or 127 bytes of the
+    instruction following the loop instruction
+\end{description}
+
+
+\mysep
+
+\begin{tabularx}{\linewidth}{|XXXX|} \hline
+
+  Jcond & flags          & Jcond & flags \\ \hline
+  JE    & ZF=1           & JE    & ZF=1 \\ \hline
+  JNE   & ZF=0           & JNE   & ZF=0 \\ \hline
+  JG    & SF=0 and ZF=0  & JA    & CF=0 and ZF=0 \\ \hline
+  JGE   & SF=OF          & JAE   & CF=0 \\ \hline
+  JNGE  & ZF=1 or SF!=OF & JNAE  & CF=1 \\ \hline
+  JL    & SF!=OF         & JB    & CF=1 \\ \hline
+  JLE   & SF!=OF         & JBE   & CF=1 or ZF=1 \\ \hline
+  JNL   & ZF=1 or SF!=OF & JNB   & CF=0 \\ \hline
+  JNLE  & SF=0 and ZF=0  & JNBE  & CF=0 and ZF=0\\ \hline
+
+\end{tabularx}
+
+\mysep
+
+\begin{description}
+  \item[JZ]  jump if result is zero
+  \item[JNZ] jump if result is non-zero
+  \item[JS]  jump if sign flag set
+  \item[JNS] jump if sign flag not set
+  \item[JO]  jump if overflow flag set
+  \item[JNO] jump if overflow flag not set
+  \item[JC]  jump if carry flag set
+  \item[JNC] jump if carry flag not set
+  \item[JP]  jump if parity flag set
+  \item[JNP] jump if parity flag not set
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[JCXZ] jump if counter register CX is zero 
+  \item[JECXZ] jump if counter register ECX is zero
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[=] Declares a (integer literal) constant.
+  \item[EQU] Equate a constant equal to text or expression.
+  \item[TEXTEQU] Creates a text macro.
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[PUSH]  pushes operand onto runtime stack and decrements ESP
+  \item[POP]  pops top of stack into operand and increments ESP
+  \item[PUSHAD] push all 32 bit registers onto stack
+  \item[POPAD] pop all 32 bit registers off of stack
+  \item[PUSHA] push all 16 bit registers onto stack
+  \item[POPA] pop all 16 bit registers off of stack
+  \item[PUSHFD] pushes the EFLAGS register onto the stack
+  \item[POPFD] pops top of stack off into EFLAGS
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[CALL] push current value of EIP onto stack and jump to procedure.
+    Decrements ESP by 4.
+  \item[RET] pops the top of the stack into EIP, the instruction pointer.
+\end{description}
+
+\mysep
+
+\subsection{Irvine32}
+
+\begin{description}
+  \item[ReadInt] reads a signed integer into EAX 
+  \item[ReadDec] reads an unsigned integer into EAX
+  \item[ReadString] reads a string into EAX. Pre: mem offset in EDX and size of
+    mem destination in ECX.
+  \item[ReadChar] 
+  \item[WriteInt] writes signed int to console. Pre: value in EAX
+  \item[WriteDec] writes unsigned int to console. Pre: value in EAX
+  \item[WriteString] writes string to console. Pre: mem offset in EDX
+  \item[WriteChar] writes single character to stdout.
+  \item[CrLf] Carriage return line feed
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[TYPE] Number of bytes in the data type used in declaration
+	\item[OFFSET] returns address offset from start of data segment of data label
+	\item[LENGTHOF] Length used in declaration (aka number of elements in array)
+  \item[SIZEOF] Size of memory assigned in declaration. (same as LENGTHOF
+    $\times$ TYPE)
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[STD] Set direction flag. Primitives decrement by size (in bytes) of the 
+		TYPE. Used to move backwards through array.
+  \item[CLD] Clear direction flag. Primitives increment by size (in bytes) of
+    the TYPE. Used to move ``forward'' through an array.
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[LOD(SB)(SW)(SD)] Load mem addressed by ESI into accumulator
+	\item[STO(SB)(SW)(SD)] Store accumulator contents into memory addressed by EDI
+  \item[MOV(SB)(SW)(SD)] ``Move'' copy data from mem addressed by ESI into
+    memory addressed by EDI
+	\item[CMP(SB)(SW)(SD)] Compare contents of two mem locations addressed by ESI 
+		and EDI
+	\item[SCA(SB)(SW)(SD)] ``Scan'' compare accumulator to memory addressed by EDI
+	\item[SB, SW, SD] In above instructions refer to BYTE, WORD, and DWORD sized
+		instructions.
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[REP] Repeat string primitive and decrement ECX while ECX $> 0$
+	\item[REPZ] Same as REP but while Zero flag is set and ECX $> 0$
+	\item[REPE]  Same as REPZ. Repeat while equal.
+	\item[REPNZ] Same as REP but while Zero flag is clear and ECX $> 0$
+	\item[REPNE] Same as REPNZ. Repeat while not equal.
+\end{description}
+
+\mysep
+
+\begin{description}
+  \item[LOCAL] Creates local variable. Creates stack frame, terminates stack
+    frame, makes space on stack for local variables, provides labels to
+    reference stack locations.
+	\item[REQ] Marks macro argument as required.
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[FINIT] Must be executed before any other FPU instructions
+	\item[FLD] Loads floating-point value on FPU stack
+	\item[FILD] Loads like FLD and converts int to REAL10 
+	\item[FST] Stores floating-point value from ST(0) into mem location
+	\item[FIST] Like FST but stores as int in memory
+	\item[FSTP] Stores like FST but also pops off ST(0) from stack.
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[FADD] Add source to destination, overwrite destination
+	\item[FSUB] Subtract source from destination
+	\item[FMUL] Multiply source by destination
+	\item[FDIV] Divide destination by source
+	\item[] Note: all above operations occur with old ST(0) and ST(1) and result
+		is stored in new ST(0). 
+\end{description}
+
+\mysep
+
+\begin{description}
+	\item[FCHS] Invert sign of ST(0). No operands.
+	\item[FABS] Clear sign of ST(0). No operands.
+\end{description}
+
+\section{Extra}
+
+\begin{description}
+  \item[Big] MSB stored first (lower) in memory. LSB stored last (higher).
+  \item[Little] LSB stored first (lower) in memory. MSB stored last (higher).
+	\item[] x86-64 systems are little endian.
+\end{description}
+
+$$T_{parallel} = fT + \frac{(1-f)T}{n}$$
+
+\end{multicols*}
+
+\end{document}
