@@ -1,0 +1,21 @@
+Ethan's License
+
+                                    Preamble
+
+This reference card was created during my time taking CS271 (Computer
+Architecture and Assembly Language) at Oregon State University taught by
+Stephen Redfield. Some of the information here was respectfully taken from the
+very well organised Canvas page. Thanks OSU and Sir Redfield!
+
+                                   DISCLAIMER
+
+THIS SOFTWARE IS PROVIDED WITH ABSOLUTELY NO WARRANTY. THE INFORMATION PROVIDED
+HEREIN MAY OR MAY NOT BE CORRECT. I TAKE NO RESPONSIBILITY IF YOU BRICK YOUR
+MACHINE OR FAIL ANY EXAMS USING ANY INSTRUCTIONS ON THIS REFERENCE CARD.
+
+                              Returning the favor
+
+If you find this software useful AND you find an error, you are morally but not
+legally obliged to fix the error and create a pull request. I will probably
+never write a program in MASM again, but there are other poor souls who will.
+I will merge the pull request for sake of humanity.
