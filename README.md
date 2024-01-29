@@ -1,3 +1,3 @@
 A lot of MASM on two pages...
 
-![most insteresting man](./masm_reference.pdf)
+![most insteresting man](./dos_equis.jpg)
